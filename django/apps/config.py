@@ -33,7 +33,9 @@ class AppConfig:
         # Last component of the Python path to the application e.g. 'admin'.
         # This value must be unique across a Django project.
         if not hasattr(self, 'label'):
+            # rpartition返回一个三元组, 第一个为分隔符左边的子串，第二个为分隔符本身，第三个为分隔符右边的子串。
             self.label = app_name.rpartition(".")[2]
+        # isidentifier 判断是否是python标识符
         if not self.label.isidentifier():
             raise ImproperlyConfigured(
                 "The app label '%s' is not a valid Python identifier." % self.label
@@ -62,11 +64,13 @@ class AppConfig:
 
     @cached_property
     def default_auto_field(self):
+        # 默认的自增主键
         from django.conf import settings
         return settings.DEFAULT_AUTO_FIELD
 
     @property
     def _is_default_auto_field_overridden(self):
+        # 是否是子类重写了default_auto_field
         return self.__class__.default_auto_field is not AppConfig.default_auto_field
 
     def _path_from_module(self, module):
@@ -128,9 +132,9 @@ class AppConfig:
                     (name, candidate)
                     for name, candidate in inspect.getmembers(mod, inspect.isclass)
                     if (
-                        issubclass(candidate, cls) and
-                        candidate is not cls and
-                        getattr(candidate, 'default', True)
+                            issubclass(candidate, cls) and
+                            candidate is not cls and
+                            getattr(candidate, 'default', True)
                     )
                 ]
                 if len(app_configs) == 1:
@@ -167,7 +171,7 @@ class AppConfig:
                     app_name = entry
             else:
                 message = (
-                    '%r defines default_app_config = %r. ' % (entry, new_entry)
+                        '%r defines default_app_config = %r. ' % (entry, new_entry)
                 )
                 if new_entry == app_config_name:
                     message += (
@@ -176,15 +180,15 @@ class AppConfig:
                     )
                 else:
                     message += (
-                        "However, Django's automatic detection %s. You should "
-                        "move the default config class to the apps submodule "
-                        "of your application and, if this module defines "
-                        "several config classes, mark the default one with "
-                        "default = True." % (
-                            "picked another configuration, %r" % app_config_name
-                            if app_config_name
-                            else "did not find this configuration"
-                        )
+                            "However, Django's automatic detection %s. You should "
+                            "move the default config class to the apps submodule "
+                            "of your application and, if this module defines "
+                            "several config classes, mark the default one with "
+                            "default = True." % (
+                                "picked another configuration, %r" % app_config_name
+                                if app_config_name
+                                else "did not find this configuration"
+                            )
                     )
                 warnings.warn(message, RemovedInDjango41Warning, stacklevel=2)
                 entry = new_entry
